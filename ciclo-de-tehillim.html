@@ -1,0 +1,587 @@
+<title>Ciclo de Tehillim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Karla:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg: #F1ECE1;
+    --surface: #FBF8F1;
+    --surface-2: #EAE3D3;
+    --line: #D9CFB8;
+    --ink: #23283D;
+    --ink-soft: #5B5C6E;
+    --muted: #8C876F;
+    --accent: #9C7A2E;
+    --accent-strong: #7C5F1E;
+    --today-bg: #F4E9D2;
+    --today-line: #C79A3E;
+    --wine: #7B3141;
+    --shadow: 0 1px 2px rgba(35,40,61,0.06), 0 6px 20px rgba(35,40,61,0.05);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #171A26;
+      --surface: #1F2333;
+      --surface-2: #262B3E;
+      --line: #363C55;
+      --ink: #EDE9DC;
+      --ink-soft: #B9B6C9;
+      --muted: #8D93AB;
+      --accent: #D8AE5C;
+      --accent-strong: #E9C57D;
+      --today-bg: #33301E;
+      --today-line: #D8AE5C;
+      --wine: #D98A97;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #171A26;
+    --surface: #1F2333;
+    --surface-2: #262B3E;
+    --line: #363C55;
+    --ink: #EDE9DC;
+    --ink-soft: #B9B6C9;
+    --muted: #8D93AB;
+    --accent: #D8AE5C;
+    --accent-strong: #E9C57D;
+    --today-bg: #33301E;
+    --today-line: #D8AE5C;
+    --wine: #D98A97;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Karla', ui-sans-serif, system-ui, sans-serif;
+    padding-left:max(16px, env(safe-area-inset-left));
+    padding-right:max(16px, env(safe-area-inset-right));
+    padding-bottom:max(28px, env(safe-area-inset-bottom));
+  }
+  h1,h2,h3{ font-family:'Frank Ruhl Libre', Georgia, 'Times New Roman', serif; text-wrap:balance; }
+
+  a{ color:var(--accent-strong); }
+
+  .wrap{ max-width:560px; margin:0 auto; }
+
+  /* Header */
+  header.top{
+    padding-top:max(22px, env(safe-area-inset-top));
+    padding-bottom:14px;
+  }
+  .eyebrow{
+    font-family:'Karla', sans-serif;
+    font-size:11.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 6px;
+  }
+  h1.title{
+    font-size:29px;
+    font-weight:700;
+    margin:0 0 4px;
+    color:var(--ink);
+    line-height:1.1;
+  }
+  p.sub{
+    margin:0;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    max-width:46ch;
+  }
+
+  details.about{
+    margin-top:14px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+  }
+  details.about summary{
+    cursor:pointer;
+    list-style:none;
+    padding:12px 16px;
+    font-family:'Karla', sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    color:var(--accent-strong);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  details.about summary::-webkit-details-marker{ display:none; }
+  details.about summary::before{
+    content:'';
+    width:7px; height:7px;
+    border-right:2px solid currentColor;
+    border-bottom:2px solid currentColor;
+    transform:rotate(-45deg);
+    transition:transform .2s ease;
+    flex:none;
+  }
+  details.about[open] summary::before{ transform:rotate(45deg); }
+  details.about .body{
+    padding:0 16px 16px;
+    font-size:14px;
+    line-height:1.62;
+    color:var(--ink-soft);
+  }
+  details.about .body p{ margin:0 0 10px; }
+  details.about .body p:last-child{ margin-bottom:0; }
+
+  /* Month control bar */
+  .monthbar{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:var(--bg);
+    padding:14px 0 13px;
+    margin-top:6px;
+  }
+  .monthbar::after{
+    content:'';
+    position:absolute;
+    left:-16px; right:-16px; bottom:0;
+    height:1px;
+    background:linear-gradient(to right, transparent, var(--line) 15%, var(--line) 85%, transparent);
+  }
+  .monthbar .row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .navbtn{
+    appearance:none;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    width:38px; height:38px;
+    border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+    flex:none;
+    font-size:16px;
+    box-shadow:var(--shadow);
+  }
+  .navbtn:active{ transform:translateY(1px); }
+  .navbtn svg{ width:16px; height:16px; }
+
+  .monthpick{ flex:1; min-width:0; position:relative; }
+  .monthpick select{
+    appearance:none;
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--ink);
+    border-radius:11px;
+    padding:8px 34px 8px 14px;
+    font-family:'Frank Ruhl Libre', Georgia, 'Times New Roman', serif;
+    font-weight:700;
+    font-size:16.5px;
+    box-shadow:var(--shadow);
+  }
+  .monthpick::after{
+    content:'';
+    position:absolute;
+    right:14px; top:16px;
+    width:7px; height:7px;
+    border-right:2px solid var(--muted);
+    border-bottom:2px solid var(--muted);
+    transform:rotate(45deg);
+    pointer-events:none;
+  }
+  .grange{
+    margin:7px 0 0 4px;
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:.02em;
+  }
+  .todaybtn{
+    appearance:none;
+    border:1px solid var(--today-line);
+    background:var(--today-bg);
+    color:var(--accent-strong);
+    font-family:'Karla', sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    padding:0 13px;
+    height:38px;
+    border-radius:11px;
+    flex:none;
+    box-shadow:var(--shadow);
+  }
+  .todaybtn:active{ transform:translateY(1px); }
+
+  /* Column labels */
+  .collabels{
+    display:grid;
+    grid-template-columns: 52px 1fr 92px 30px;
+    gap:10px;
+    padding:14px 4px 6px;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .collabels span:last-child, .collabels span:nth-child(3){ text-align:right; }
+
+  /* Day list */
+  ul.days{ list-style:none; margin:0; padding:0; }
+  ul.days li{
+    display:grid;
+    grid-template-columns: 52px 1fr 92px 30px;
+    gap:10px;
+    align-items:center;
+    padding:10px 4px;
+    border-top:1px solid var(--line);
+  }
+  ul.days li:last-child{ border-bottom:1px solid var(--line); }
+
+  .daynum{ display:flex; flex-direction:column; align-items:center; line-height:1; }
+  .daynum .n{
+    font-family:'Frank Ruhl Libre', Georgia, 'Times New Roman', serif;
+    font-weight:700;
+    font-size:19px;
+    font-variant-numeric:tabular-nums;
+  }
+  .daynum .heb{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:3px;
+    direction:rtl;
+  }
+
+  .greg{ min-width:0; }
+  .greg .wd{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+  }
+  .greg .d{
+    font-size:15px;
+    color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .psalms{
+    text-align:right;
+    font-family:'Frank Ruhl Libre', Georgia, 'Times New Roman', serif;
+    font-weight:500;
+    font-size:16px;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  .psalms .note{
+    display:block;
+    font-family:'Karla', sans-serif;
+    font-weight:400;
+    font-size:10.5px;
+    color:var(--wine);
+    margin-top:2px;
+  }
+
+  .chk{
+    justify-self:end;
+    width:23px; height:23px;
+    border-radius:7px;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    flex:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .chk svg{ width:13px; height:13px; opacity:0; transform:scale(.6); transition:opacity .12s ease, transform .12s ease; }
+  .chk.on{ background:var(--accent); border-color:var(--accent); }
+  .chk.on svg{ opacity:1; transform:scale(1); }
+  .chk.on svg path{ stroke:var(--surface); }
+
+  ul.days li.today{
+    background:var(--today-bg);
+    margin:0 -10px;
+    padding-left:14px;
+    padding-right:14px;
+    border-radius:12px;
+    border-top-color:transparent;
+  }
+  ul.days li.today + li{ border-top-color:transparent; }
+  ul.days li.today .n{ color:var(--accent-strong); }
+  ul.days li.today .wd{ color:var(--accent-strong); }
+
+  .foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:18px 4px 6px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .foot button{
+    appearance:none; background:none; border:none;
+    font-family:'Karla', sans-serif;
+    font-size:12px;
+    color:var(--muted);
+    text-decoration:underline;
+    text-underline-offset:2px;
+    padding:6px 0;
+  }
+
+  #list{ transition:opacity .16s ease; }
+  #list.swap{ opacity:0; }
+
+  @media (prefers-reduced-motion: reduce){
+    #list{ transition:none; }
+    .chk svg{ transition:none; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">Guía de lectura · ciclo mensual</p>
+    <h1 class="title">Ciclo de Tehillim</h1>
+    <p class="sub">Los 150 Salmos repartidos en las porciones tradicionales de treinta días del mes hebreo, con su fecha correspondiente en el calendario gregoriano. Para Sara de parte de Riccardo.</p>
+
+    <details class="about">
+      <summary>Cómo funciona este ciclo</summary>
+      <div class="body">
+        <p>El libro de Tehillim se divide en treinta porciones diarias, una por cada día del mes hebreo, de modo que el ciclo completo se recita una vez al mes. El Salmo 119, el más extenso, se reparte entre los días 25 y 26.</p>
+        <p>Cuando un mes hebreo tiene solo veintinueve días —como Jeshvan o Kislev en ciertos años—, las porciones de los días 29 y 30 se combinan y se leen juntas ese día.</p>
+      </div>
+    </details>
+  </header>
+
+  <div class="monthbar">
+    <div class="row">
+      <button class="navbtn" id="prevBtn" aria-label="Mes anterior">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="monthpick">
+        <select id="monthSelect" aria-label="Elegir mes hebreo"></select>
+      </div>
+      <button class="navbtn" id="nextBtn" aria-label="Mes siguiente">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="todaybtn" id="todayBtn">Hoy</button>
+    </div>
+    <p class="grange" id="gregRange"></p>
+  </div>
+
+  <div class="collabels">
+    <span>Día</span>
+    <span>Fecha</span>
+    <span>Salmos</span>
+    <span></span>
+  </div>
+
+  <ul class="days" id="list"></ul>
+
+  <div class="foot">
+    <span id="cycleInfo"></span>
+    <button id="resetBtn" type="button">Reiniciar marcas del mes</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var HEB_FMT = new Intl.DateTimeFormat('en-u-ca-hebrew', {year:'numeric', month:'long', day:'numeric'});
+  var WD_FMT  = new Intl.DateTimeFormat('es', {weekday:'short', timeZone:'UTC'});
+  var DM_FMT  = new Intl.DateTimeFormat('es', {day:'numeric', month:'short', timeZone:'UTC'});
+  var MY_FMT  = new Intl.DateTimeFormat('es', {month:'short', year:'numeric', timeZone:'UTC'});
+
+  var MONTH_ES = {
+    'Tishri':'Tishrei', 'Heshvan':'Jeshvan', 'Kislev':'Kislev', 'Tevet':'Tevet',
+    'Shevat':'Shevat', 'Adar':'Adar', 'Adar I':'Adar I', 'Adar II':'Adar II',
+    'Nisan':'Nisan', 'Iyar':'Iyar', 'Sivan':'Sivan', 'Tamuz':'Tamuz', 'Av':'Av', 'Elul':'Elul'
+  };
+
+  var PORTIONS = {
+    1:'1–9', 2:'10–17', 3:'18–22', 4:'23–28', 5:'29–34', 6:'35–38', 7:'39–43',
+    8:'44–48', 9:'49–54', 10:'55–59', 11:'60–65', 12:'66–68', 13:'69–71',
+    14:'72–76', 15:'77–78', 16:'79–82', 17:'83–87', 18:'88–89', 19:'90–96',
+    20:'97–103', 21:'104–105', 22:'106–107', 23:'108–112', 24:'113–118',
+    25:'119', 26:'119', 27:'120–134', 28:'135–139', 29:'140–144', 30:'145–150'
+  };
+  var PORTION_NOTE = { 25:'versículos 1–96', 26:'versículos 97–176' };
+
+  var HEB_NUM = [null,'א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ז׳','ח׳','ט׳','י׳','י״א','י״ב','י״ג','י״ד','ט״ו','ט״ז','י״ז','י״ח','י״ט','כ׳','כ״א','כ״ב','כ״ג','כ״ד','כ״ה','כ״ו','כ״ז','כ״ח','כ״ט','ל׳'];
+
+  function addDays(d, n){ var r = new Date(d.getTime()); r.setUTCDate(r.getUTCDate()+n); return r; }
+  function hebrewOf(d){
+    var parts = HEB_FMT.formatToParts(d), o = {};
+    for (var i=0;i<parts.length;i++) o[parts[i].type] = parts[i].value;
+    return { year:+o.year, month:o.month, day:+o.day };
+  }
+  function monthKey(h){ return h.year + '-' + h.month; }
+  function findMonthStart(d){
+    var cur = d, h = hebrewOf(cur);
+    while (h.day > 1){ cur = addDays(cur, -1); h = hebrewOf(cur); }
+    return cur;
+  }
+  function monthLength(startDate){
+    var key = monthKey(hebrewOf(startDate)), cur = startDate, len = 0;
+    while (monthKey(hebrewOf(cur)) === key){ len++; cur = addDays(cur, 1); }
+    return len;
+  }
+  function nextMonthStart(startDate, len){ return addDays(startDate, len); }
+  function prevMonthStart(startDate){ return findMonthStart(addDays(startDate, -1)); }
+  function yearStartOf(monthStart){
+    var cur = monthStart;
+    while (hebrewOf(cur).month !== 'Tishri') cur = prevMonthStart(cur);
+    return cur;
+  }
+  function listYearMonths(yearStart){
+    var yearNum = hebrewOf(yearStart).year, cur = yearStart, months = [];
+    while (hebrewOf(cur).year === yearNum){
+      var h = hebrewOf(cur), len = monthLength(cur);
+      months.push({ start: cur, label: h.month, year: h.year, length: len });
+      cur = addDays(cur, len);
+    }
+    return months;
+  }
+  function todayUTC(){
+    var n = new Date();
+    return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()));
+  }
+  function sameDay(a,b){ return a.getTime() === b.getTime(); }
+  function iso(d){ return d.toISOString().slice(0,10); }
+
+  var STORE_KEY = 'tehillim-read-v1';
+  function loadRead(){
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }
+    catch(e){ return {}; }
+  }
+  function saveRead(obj){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(obj)); }
+    catch(e){ /* no-op: private mode or storage unavailable */ }
+  }
+  var readMap = loadRead();
+
+  var today = todayUTC();
+  var current = findMonthStart(today);
+
+  var listEl = document.getElementById('list');
+  var selectEl = document.getElementById('monthSelect');
+  var rangeEl = document.getElementById('gregRange');
+  var cycleInfoEl = document.getElementById('cycleInfo');
+
+  function checkIcon(){
+    return '<svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.2l3 3 6-6.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  function render(animate){
+    var len = monthLength(current);
+    var h = hebrewOf(current);
+    var monthLabel = MONTH_ES[h.month] || h.month;
+
+    document.title = 'Ciclo de Tehillim — ' + monthLabel + ' ' + h.year;
+
+    var lastDay = addDays(current, len - 1);
+    rangeEl.textContent = MY_FMT.format(current) + ' – ' + MY_FMT.format(lastDay);
+
+    var rows = '';
+    for (var day = 1; day <= len; day++){
+      var d = addDays(current, day - 1);
+      var portionKey = (len === 29 && day === 29) ? 'combo' : day;
+      var range, note = '';
+      if (portionKey === 'combo'){
+        range = '140–150';
+        note = 'incluye los días 29 y 30 (mes de 29 días)';
+      } else {
+        range = PORTIONS[day];
+        note = PORTION_NOTE[day] || '';
+      }
+      var isToday = sameDay(d, today);
+      var key = iso(d);
+      var isRead = !!readMap[key];
+
+      rows += '<li class="' + (isToday ? 'today' : '') + '" data-key="' + key + '">'
+        + '<div class="daynum"><span class="n">' + day + '</span><span class="heb">' + HEB_NUM[day] + '</span></div>'
+        + '<div class="greg"><span class="wd">' + WD_FMT.format(d) + '</span><br><span class="d">' + DM_FMT.format(d) + '</span></div>'
+        + '<div class="psalms">' + range + (note ? '<span class="note">' + note + '</span>' : '') + '</div>'
+        + '<button class="chk' + (isRead ? ' on' : '') + '" data-key="' + key + '" aria-label="Marcar como leído">' + checkIcon() + '</button>'
+        + '</li>';
+    }
+
+    function paint(){
+      listEl.innerHTML = rows;
+      listEl.classList.remove('swap');
+      if (isCurrentMonthOfToday()){
+        var todayLi = listEl.querySelector('li.today');
+        if (todayLi) todayLi.scrollIntoView({ block:'center' });
+      }
+    }
+
+    if (animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      listEl.classList.add('swap');
+      setTimeout(paint, 130);
+    } else {
+      paint();
+    }
+
+    buildSelect();
+    cycleInfoEl.textContent = len + (len === 1 ? ' día' : ' días') + ' en ' + monthLabel;
+  }
+
+  function isCurrentMonthOfToday(){
+    var s = findMonthStart(today);
+    return sameDay(s, current);
+  }
+
+  function buildSelect(){
+    var yStart = yearStartOf(current);
+    var months = listYearMonths(yStart);
+    var options = '';
+    for (var i=0;i<months.length;i++){
+      var m = months[i];
+      var sel = sameDay(m.start, current) ? ' selected' : '';
+      var label = (MONTH_ES[m.label] || m.label) + ' ' + m.year;
+      options += '<option value="' + i + '"' + sel + '>' + label + '</option>';
+    }
+    selectEl.innerHTML = options;
+    selectEl.onchange = function(){
+      current = months[+selectEl.value].start;
+      render(true);
+    };
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', function(){
+    current = prevMonthStart(current);
+    render(true);
+  });
+  document.getElementById('nextBtn').addEventListener('click', function(){
+    current = nextMonthStart(current, monthLength(current));
+    render(true);
+  });
+  document.getElementById('todayBtn').addEventListener('click', function(){
+    current = findMonthStart(today);
+    render(true);
+  });
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    var len = monthLength(current);
+    for (var day = 1; day <= len; day++){
+      delete readMap[iso(addDays(current, day - 1))];
+    }
+    saveRead(readMap);
+    render(false);
+  });
+
+  listEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.chk');
+    if (!btn) return;
+    var key = btn.getAttribute('data-key');
+    if (readMap[key]) delete readMap[key]; else readMap[key] = true;
+    saveRead(readMap);
+    btn.classList.toggle('on');
+  });
+
+  render(false);
+})();
+</script>
